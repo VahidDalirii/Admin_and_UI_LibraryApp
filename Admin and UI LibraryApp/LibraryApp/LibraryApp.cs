@@ -629,7 +629,7 @@ namespace LibraryApp
 
                 Rent newRent = new Rent(rentingMember, rentingBook, null, startDate, endDate); //Creates a new rent object
 
-                if (BookIsFreeToRent(rentingBook))
+                if (BookIsFreeToRent(newRent))
                 {
                     RentRepository.CreateRent(newRent);//Inserts a rent in db
                     Console.WriteLine($"\n'{rentingMember.Name}' rented '{rentingBook.Title}' SUCCESSFULLY");
@@ -729,7 +729,7 @@ namespace LibraryApp
 
                 Rent newRent = new Rent(rentingMember, null, rentingFilm, startDate, endDate);
 
-                if (FilmIsFreeToRent(rentingFilm))
+                if (FilmIsFreeToRent(newRent))
                 {
                     RentRepository.CreateRent(newRent);
                     Console.WriteLine($"\n'{rentingMember.Name}' rented '{rentingFilm.Title}' SUCCESSFULLY");
@@ -906,25 +906,20 @@ namespace LibraryApp
         /// </summary>
         /// <param name="book"></param>
         /// <returns>True if book if free to rent and false if not</returns>
-        private bool BookIsFreeToRent(Book book)
+        private bool BookIsFreeToRent(Rent rent)
         {
-            List<Rent> allRents = RentRepository.GetRents();
-            List<Rent> allSameRentedBook = RentRepository.GetAllSameBookRented(book);
+            List<Rent> allSameBookRented = RentRepository.GetAllSameBookRented(rent.RentedBook);
             int rentedCopies = 0;
-            for (int i = 0; i < allRents.Count; i++)
+
+            for (int i = 0; i < allSameBookRented.Count; i++)
             {
-                if (allRents[i].RentedBook != null && allRents[i].RentedBook.Id == book.Id)
+                if (rent.StartDate >= allSameBookRented[i].StartDate && rent.StartDate <= allSameBookRented[i].EndDate)
                 {
-                    for (int j = 0; j < allSameRentedBook.Count; j++)
-                    {
-                        if (allRents[i].StartDate >= allSameRentedBook[j].StartDate && allRents[i].StartDate <= allSameRentedBook[j].EndDate)
-                        {
-                            rentedCopies++;
-                        }
-                    }
+                    rentedCopies++;
                 }
             }
-            if (rentedCopies > book.Copies)
+
+            if (rentedCopies >= rent.RentedBook.Copies)
             {
                 return false;
             }
@@ -936,25 +931,18 @@ namespace LibraryApp
         /// </summary>
         /// <param name="film"></param>
         /// <returns>True if film if free to rent and false if not</returns>
-        private bool FilmIsFreeToRent(Film film)
+        private bool FilmIsFreeToRent(Rent rent)
         {
-            List<Rent> allRents = RentRepository.GetRents();
-            List<Rent> allSameRentedFilm = RentRepository.GetAllSameFilmRented(film);
+            List<Rent> allSameFilmRented = RentRepository.GetAllSameFilmRented(rent.RentedFilm);
             int rentedCopies = 0;
-            for (int i = 0; i < allRents.Count; i++)
+            for (int i = 0; i < allSameFilmRented.Count; i++)
             {
-                if (allRents[i].RentedFilm != null && allRents[i].RentedFilm.Id == film.Id)
+                if (rent.StartDate >= allSameFilmRented[i].StartDate && rent.StartDate <= allSameFilmRented[i].EndDate)
                 {
-                    for (int j = 0; j < allSameRentedFilm.Count; j++)
-                    {
-                        if (allRents[i].StartDate >= allSameRentedFilm[j].StartDate && allRents[i].StartDate <= allSameRentedFilm[j].EndDate)
-                        {
-                            rentedCopies++;
-                        }
-                    }
+                    rentedCopies++;
                 }
             }
-            if (rentedCopies > film.Copies)
+            if (rentedCopies >= rent.RentedFilm.Copies)
             {
                 return false;
             }
