@@ -913,7 +913,7 @@ namespace LibraryApp
 
             for (int i = 0; i < allSameBookRented.Count; i++)
             {
-                if (rent.StartDate >= allSameBookRented[i].StartDate && rent.StartDate <= allSameBookRented[i].EndDate)
+                if (rent.EndDate >= allSameBookRented[i].StartDate && rent.StartDate <= allSameBookRented[i].EndDate)
                 {
                     rentedCopies++;
                 }
@@ -937,7 +937,7 @@ namespace LibraryApp
             int rentedCopies = 0;
             for (int i = 0; i < allSameFilmRented.Count; i++)
             {
-                if (rent.StartDate >= allSameFilmRented[i].StartDate && rent.StartDate <= allSameFilmRented[i].EndDate)
+                if (rent.EndDate >= allSameFilmRented[i].StartDate && rent.StartDate <= allSameFilmRented[i].EndDate)
                 {
                     rentedCopies++;
                 }
